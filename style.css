@@ -1,15 +1,16 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f1115;
-  color: white;
+.editor {
+  min-height: 200px;
+  padding: 10px;
+  background: #1a1f2b;
+  border-radius: 10px;
+  border: 1px solid #333;
 }
 
 .sidebar {
   width: 240px;
-  height: 100vh;
   position: fixed;
-  background: #171a21;
+  height: 100vh;
+  background: #11151c;
   padding: 20px;
 }
 
@@ -18,33 +19,9 @@ body {
   padding: 20px;
 }
 
-button {
-  background: #2d6cdf;
-  border: none;
-  padding: 10px;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  background: #1f2430;
-  border: 1px solid #333;
-  color: white;
-  border-radius: 6px;
-}
-
 .card {
   background: #1a1f2b;
   padding: 15px;
+  margin: 10px 0;
   border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-a {
-  color: #4ea1ff;
-  text-decoration: none;
 }
