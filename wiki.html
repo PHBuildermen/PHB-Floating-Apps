@@ -1,44 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Wiki</title>
+  <title>Studio X Wiki</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="sidebar">
-  <h2>Wiki Pages</h2>
+  <h2>Studio X Wiki</h2>
   <button onclick="logout()">Logout</button>
 </div>
 
 <div class="main">
 
-  <h1>Create Page</h1>
+  <h1>Create Wiki Page</h1>
 
   <input id="title" placeholder="Page Title">
-  <textarea id="content" placeholder="Content"></textarea>
 
-  <input type="file" onchange="previewImage(event)">
-  <img id="preview" style="max-width:100%; margin-top:10px;">
+  <!-- Editor Toolbar -->
+  <div class="card">
+    <button onclick="boldText()">Bold</button>
+    <button onclick="heading()">H2</button>
+    <input type="file" onchange="insertImage(this)">
+  </div>
 
-  <button onclick="savePage(title.value, content.value)">Save Page</button>
+  <!-- Editor -->
+  <div id="editor" contenteditable="true" class="editor"></div>
+
+  <button onclick="save()">Save Page</button>
 
   <hr>
 
   <h2>Pages</h2>
   <div id="pages"></div>
+
 </div>
 
-<script src="auth.js"></script>
-<script src="roles.js"></script>
-<script src="wiki.js"></script>
-<script src="uploader.js"></script>
+<script type="module">
+import { createPage, loadPages } from "./wiki.js";
+import { initEditor } from "./editor.js";
+import { logout } from "./auth.js";
 
-<script>
-const user = getCurrentUser();
-if (!user) window.location.href = "login.html";
+initEditor("editor");
 
-loadPages();
+window.save = async () => {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("editor").innerHTML;
+
+  await createPage(title, content);
+  alert("Saved!");
+  location.reload();
+};
+
+loadPages((pages) => {
+  const container = document.getElementById("pages");
+
+  pages.forEach(p => {
+    container.innerHTML += `
+      <div class="card">
+        <h3>${p.title}</h3>
+        <div>${p.content}</div>
+        <small>by ${p.author}</small>
+      </div>
+    `;
+  });
+});
 </script>
 
 </body>
