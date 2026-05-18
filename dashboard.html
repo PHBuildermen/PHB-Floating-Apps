@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Studio X Wiki</h2>
+  <p id="role"></p>
+
+  <a href="wiki.html">Wiki Pages</a><br><br>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<div class="main">
+  <h1>Dashboard</h1>
+  <div class="card">
+    Welcome, <span id="user"></span>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="roles.js"></script>
+
+<script>
+const user = getCurrentUser();
+if (!user) window.location.href = "login.html";
+
+document.getElementById("user").innerText = user;
+document.getElementById("role").innerText = "Role: " + getUserRole(user);
+</script>
+
+</body>
+</html>
