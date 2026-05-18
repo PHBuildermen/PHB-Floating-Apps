@@ -1,34 +1,32 @@
 const workspace = document.getElementById("workspace");
-const dock = document.getElementById("dock");
+const taskbar = document.getElementById("taskbar");
 
-let zIndex = 1;
+let z = 1;
 
-/* App Launcher Click */
+/* Launcher */
 document.querySelectorAll(".app-card").forEach(card => {
-  card.addEventListener("click", () => {
-    openApp(card.dataset.app);
-  });
+  card.onclick = () => openApp(card.dataset.app);
 });
 
 /* Open App */
 function openApp(app) {
   const win = document.createElement("div");
   win.className = "window";
-  win.style.top = "100px";
-  win.style.left = "100px";
-  win.style.zIndex = zIndex++;
+  win.style.top = "80px";
+  win.style.left = "80px";
+  win.style.zIndex = z++;
 
   let content = "";
 
   if (app === "google") {
-    content = `<iframe src="https://www.google.com"></iframe>`;
+    content = `<iframe src="https://example.com"></iframe>`;
   } else if (app === "youtube") {
-    content = `<iframe src="https://www.youtube.com"></iframe>`;
-  } else if (app === "calculator") {
+    content = `<iframe src="https://example.com"></iframe>`;
+  } else {
     content = `
       <div class="window-content">
-        <input id="calcInput" type="text" style="width:100%;padding:10px;font-size:20px"/>
-        <button onclick="calculate()" style="width:100%;padding:10px;">=</button>
+        <input id="calc" style="width:100%;padding:10px">
+        <button onclick="calc()">=</button>
       </div>
     `;
   }
@@ -42,39 +40,89 @@ function openApp(app) {
       </div>
     </div>
     ${content}
+    <div class="resize-handle"></div>
   `;
 
   workspace.appendChild(win);
-  dragElement(win);
+
+  drag(win);
+  resize(win);
 }
 
-/* Dragging */
-function dragElement(el) {
-  let pos1=0,pos2=0,pos3=0,pos4=0;
+/* DRAG (Mouse + Touch) */
+function drag(el) {
   const header = el.querySelector(".window-header");
 
-  header.onmousedown = dragMouseDown;
+  let offsetX, offsetY;
 
-  function dragMouseDown(e) {
+  function start(e) {
+    const rect = el.getBoundingClientRect();
+    offsetX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    offsetY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", stop);
+    document.addEventListener("touchmove", move);
+    document.addEventListener("touchend", stop);
+  }
+
+  function move(e) {
+    const x = (e.touches ? e.touches[0].clientX : e.clientX);
+    const y = (e.touches ? e.touches[0].clientY : e.clientY);
+
+    el.style.left = (x - offsetX) + "px";
+    el.style.top = (y - offsetY) + "px";
+  }
+
+  function stop() {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", stop);
+    document.removeEventListener("touchmove", move);
+    document.removeEventListener("touchend", stop);
+  }
+
+  header.addEventListener("mousedown", start);
+  header.addEventListener("touchstart", start);
+}
+
+/* RESIZE */
+function resize(el) {
+  const handle = el.querySelector(".resize-handle");
+
+  let startX, startY, startW, startH;
+
+  handle.addEventListener("mousedown", init);
+  handle.addEventListener("touchstart", init);
+
+  function init(e) {
     e.preventDefault();
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDrag;
-    document.onmousemove = elementDrag;
+
+    startX = e.clientX || e.touches[0].clientX;
+    startY = e.clientY || e.touches[0].clientY;
+
+    startW = el.offsetWidth;
+    startH = el.offsetHeight;
+
+    document.addEventListener("mousemove", resizeMove);
+    document.addEventListener("mouseup", stop);
+
+    document.addEventListener("touchmove", resizeMove);
+    document.addEventListener("touchend", stop);
   }
 
-  function elementDrag(e) {
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    el.style.top = (el.offsetTop - pos2) + "px";
-    el.style.left = (el.offsetLeft - pos1) + "px";
+  function resizeMove(e) {
+    const x = e.clientX || e.touches[0].clientX;
+    const y = e.clientY || e.touches[0].clientY;
+
+    el.style.width = (startW + x - startX) + "px";
+    el.style.height = (startH + y - startY) + "px";
   }
 
-  function closeDrag() {
-    document.onmouseup = null;
-    document.onmousemove = null;
+  function stop() {
+    document.removeEventListener("mousemove", resizeMove);
+    document.removeEventListener("mouseup", stop);
+    document.removeEventListener("touchmove", resizeMove);
+    document.removeEventListener("touchend", stop);
   }
 }
 
@@ -88,21 +136,21 @@ function minimize(btn) {
   const win = btn.closest(".window");
   win.style.display = "none";
 
-  const dockItem = document.createElement("div");
-  dockItem.className = "dock-item";
-  dockItem.innerText = "App";
+  const item = document.createElement("div");
+  item.className = "task-item";
+  item.innerText = "App";
 
-  dockItem.onclick = () => {
+  item.onclick = () => {
     win.style.display = "flex";
-    dockItem.remove();
+    item.remove();
   };
 
-  dock.appendChild(dockItem);
+  taskbar.appendChild(item);
 }
 
 /* Calculator */
-function calculate() {
-  const input = document.getElementById("calcInput");
+function calc() {
+  const input = document.getElementById("calc");
   try {
     input.value = eval(input.value);
   } catch {
