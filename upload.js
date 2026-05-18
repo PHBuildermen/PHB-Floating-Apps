@@ -1,10 +1,15 @@
-function previewImage(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
+import { storage } from "./firebase.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-  reader.onload = function(e) {
-    document.getElementById("preview").src = e.target.result;
-  };
+export async function uploadImage(file) {
+  const imageRef = ref(storage, `wiki-images/${Date.now()}-${file.name}`);
 
-  reader.readAsDataURL(file);
+  await uploadBytes(imageRef, file);
+  const url = await getDownloadURL(imageRef);
+
+  return url;
 }
