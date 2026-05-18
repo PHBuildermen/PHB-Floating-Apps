@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wiki</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Wiki Pages</h2>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<div class="main">
+
+  <h1>Create Page</h1>
+
+  <input id="title" placeholder="Page Title">
+  <textarea id="content" placeholder="Content"></textarea>
+
+  <input type="file" onchange="previewImage(event)">
+  <img id="preview" style="max-width:100%; margin-top:10px;">
+
+  <button onclick="savePage(title.value, content.value)">Save Page</button>
+
+  <hr>
+
+  <h2>Pages</h2>
+  <div id="pages"></div>
+</div>
+
+<script src="auth.js"></script>
+<script src="roles.js"></script>
+<script src="wiki.js"></script>
+<script src="uploader.js"></script>
+
+<script>
+const user = getCurrentUser();
+if (!user) window.location.href = "login.html";
+
+loadPages();
+</script>
+
+</body>
+</html>
